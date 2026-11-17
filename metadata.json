@@ -1,0 +1,6 @@
+{
+  "name": "MediKart",
+  "description": "MediKart – Indian Online Pharmacy Demo Showcase (Catalogue & Demo Mode Only; Sales and Checkout Disabled)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

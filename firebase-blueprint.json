@@ -1,0 +1,315 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated customer profile document with immutable customer role.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID matching the document ID."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 120,
+          "description": "User email address."
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Customer display name."
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 20,
+          "description": "Optional contact phone number."
+        },
+        "city": {
+          "type": "string",
+          "enum": ["Bengaluru", "Mumbai", "New Delhi", "Hyderabad", "Chennai", "Pune"],
+          "description": "Selected demo city."
+        },
+        "addressLine": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200,
+          "description": "Optional demo delivery address line."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["customer"],
+          "description": "Customer role only; immutable and cannot be escalated."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of profile creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last profile update."
+        }
+      },
+      "required": ["uid", "email", "fullName", "city", "role", "createdAt", "updatedAt"]
+    },
+    "DemoCartItem": {
+      "title": "DemoCartItem",
+      "description": "Customer-owned demo cart line item for catalogue preview only.",
+      "type": "object",
+      "properties": {
+        "skuId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Demo SKU identifier."
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "brandName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Demo medicine brand name."
+        },
+        "genericComposition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "description": "Generic salt composition."
+        },
+        "batchNumber": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "FEFO active demo batch number."
+        },
+        "expiryMonthYear": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 7,
+          "pattern": "^(0[1-9]|1[0-2])\\/[0-9]{4}$",
+          "description": "Batch expiry in MM/YYYY format."
+        },
+        "mrpInr": {
+          "type": "number",
+          "description": "Demo MRP in INR."
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Demo item quantity between 1 and 20."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of update."
+        }
+      },
+      "required": ["skuId", "userId", "brandName", "genericComposition", "batchNumber", "expiryMonthYear", "mrpInr", "quantity", "updatedAt"]
+    },
+    "DemoRxDraft": {
+      "title": "DemoRxDraft",
+      "description": "Non-PHI sample prescription draft metadata for demo preview only.",
+      "type": "object",
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Draft identifier."
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Sample draft label."
+        },
+        "sampleType": {
+          "type": "string",
+          "enum": ["sample_cardiac", "sample_fever", "local_preview_marker"],
+          "description": "Type of demo draft."
+        },
+        "city": {
+          "type": "string",
+          "enum": ["Bengaluru", "Mumbai", "New Delhi", "Hyderabad", "Chennai", "Pune"],
+          "description": "Demo city context."
+        },
+        "note": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160,
+          "description": "Non-PHI demo note."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of draft creation."
+        }
+      },
+      "required": ["draftId", "userId", "title", "sampleType", "city", "createdAt"]
+    },
+    "AdminStaffRecord": {
+      "title": "AdminStaffRecord",
+      "description": "Server-provisioned Admin authorization record. Never writable by clients.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin"]
+        }
+      },
+      "required": ["uid", "active", "role"]
+    },
+    "InventorySku": {
+      "title": "InventorySku",
+      "description": "Admin-only demo inventory SKU record.",
+      "type": "object",
+      "properties": {
+        "skuId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "brandName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "genericComposition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "manufacturer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Chronic & Cardiac",
+            "Pain/Fever & Cold",
+            "Vitamins & Immunity",
+            "Ayurveda & Herbal",
+            "Digestive & Gut",
+            "Skin & Derma Care",
+            "Devices & First Aid"
+          ]
+        },
+        "schedule": {
+          "type": "string",
+          "enum": ["OTC", "Schedule H Rx Required", "Medical Device"]
+        },
+        "mrpInr": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["skuId", "brandName", "genericComposition", "manufacturer", "category", "schedule", "mrpInr", "updatedAt"]
+    },
+    "InventoryBatch": {
+      "title": "InventoryBatch",
+      "description": "Admin-only batch stock record for a demo inventory SKU.",
+      "type": "object",
+      "properties": {
+        "batchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "skuId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "batchNumber": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "expiryMonthYear": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 7,
+          "pattern": "^(0[1-9]|1[0-2])\\/[0-9]{4}$"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "quarantined": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["batchId", "skuId", "batchNumber", "expiryMonthYear", "quantity", "quarantined", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private customer profile documents keyed by Auth UID."
+    },
+    "/users/{userId}/cartItems/{skuId}": {
+      "schema": { "$ref": "#/entities/DemoCartItem" },
+      "description": "Customer-owned demo cart items."
+    },
+    "/users/{userId}/rxDrafts/{draftId}": {
+      "schema": { "$ref": "#/entities/DemoRxDraft" },
+      "description": "Customer-owned non-PHI sample Rx draft metadata."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminStaffRecord" },
+      "description": "Server-provisioned admin authorization lookup documents."
+    },
+    "/inventory/{skuId}": {
+      "schema": { "$ref": "#/entities/InventorySku" },
+      "description": "Admin-only inventory SKU documents."
+    },
+    "/inventory/{skuId}/batches/{batchId}": {
+      "schema": { "$ref": "#/entities/InventoryBatch" },
+      "description": "Admin-only batch stock subcollection under inventory SKUs."
+    }
+  }
+}
