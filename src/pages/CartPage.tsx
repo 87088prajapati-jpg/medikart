@@ -106,7 +106,7 @@ export function CartPage({ onBrowseCatalogue }: CartPageProps) {
                         <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border border-emerald-100 bg-[#F6FBF8]">
                           <DemoImage
                             src={thumbnailSrc}
-                            alt={`${item.brandName} product thumbnail`}
+                            alt={`${item.brandName} (${item.genericComposition}) product thumbnail`}
                             compact
                             className="w-full h-full object-cover"
                           />

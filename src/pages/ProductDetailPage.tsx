@@ -108,7 +108,9 @@ export function ProductDetailPage({
             <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-slate-200 bg-[#F6FBF8]">
               <DemoImage
                 src={medicine.imageUrl}
-                alt={`${medicine.brandName} sample packaging`}
+                alt={`${medicine.brandName} (${medicine.genericComposition}) — ${medicine.packSize} sample packaging`}
+                loading="eager"
+                fetchPriority="high"
                 className="w-full h-full object-cover"
               />
             </div>

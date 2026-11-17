@@ -29,64 +29,82 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           <div className="md:col-span-3 space-y-2.5">
-            <h3 className="text-sm font-semibold text-white">Explore Demo</h3>
+            <h2 className="text-sm font-semibold text-white">Explore Demo</h2>
             <ul className="space-y-2 text-sm text-emerald-100/80">
               <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('home')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="#/home"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('home');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-block"
                 >
                   Home Showcase
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('catalogue')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="#/catalogue"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('catalogue');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-block"
                 >
                   Medicine Catalogue
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('rx-upload')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="#/rx-upload"
+                  rel="nofollow"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('rx-upload');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-block"
                 >
                   Rx Preview Workspace
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('account')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="#/account"
+                  rel="nofollow"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('account');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-block"
                 >
                   Customer Account
-                </button>
+                </a>
               </li>
             </ul>
           </div>
 
           <div className="md:col-span-4 space-y-2.5">
-            <h3 className="text-sm font-semibold text-white">
+            <h2 className="text-sm font-semibold text-white">
               Regulatory &amp; Access Notice
-            </h3>
+            </h2>
             <p className="text-xs text-emerald-100/75 leading-relaxed">
               Before any real pharmacy operation, applicable drug-sale licences,
               registered pharmacist supervision, and premises approvals must be
               independently verified with statutory authorities.
             </p>
             <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => onNavigate('staff-login')}
+              <a
+                href="#/staff-login"
+                rel="nofollow"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate('staff-login');
+                }}
                 className="inline-flex items-center px-3.5 py-2 rounded-lg border border-emerald-700 text-xs font-medium text-emerald-100 hover:bg-emerald-900/60 hover:text-white transition-colors cursor-pointer"
               >
                 Staff Portal
-              </button>
+              </a>
             </div>
           </div>
         </div>

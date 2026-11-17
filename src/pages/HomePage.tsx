@@ -294,6 +294,8 @@ export function HomePage({
                 <DemoImage
                   src={HERO_BANNER_IMAGE}
                   alt="MediKart modern clinical pharmacy showcase counter"
+                  loading="eager"
+                  fetchPriority="high"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
@@ -364,6 +366,7 @@ export function HomePage({
       {/* Prescription Upload & Ayurveda Promotional Cards */}
       <section className="bg-[#F6FBF8] border-y border-emerald-100/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h2 className="sr-only">Prescription Preview &amp; Herbal Care Showcase</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
             {/* Rx Upload Demo Card */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 flex flex-col justify-between">
@@ -472,7 +475,7 @@ export function HomePage({
                 >
                   <DemoImage
                     src={med.imageUrl}
-                    alt={`${med.brandName} sample product`}
+                    alt={`${med.brandName} (${med.genericComposition}) — ${med.category} sample demo product`}
                     className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200"
                   />
                 </button>

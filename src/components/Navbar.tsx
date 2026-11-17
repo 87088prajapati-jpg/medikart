@@ -59,6 +59,35 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
     return currentRoute === id;
   };
 
+  const getRouteHref = (id: AppRoute) => {
+    switch (id) {
+      case 'home':
+        return '#/home';
+      case 'catalogue':
+        return '#/catalogue';
+      case 'rx-upload':
+        return '#/rx-upload';
+      case 'cart':
+        return '#/cart';
+      case 'account':
+        return '#/account';
+      case 'staff-login':
+        return '#/staff-login';
+      case 'admin':
+        return '#/admin';
+      default:
+        return '#/home';
+    }
+  };
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    id: AppRoute,
+  ) => {
+    e.preventDefault();
+    onNavigate(id);
+  };
+
   return (
     <>
       {/* Mandatory visible demo notice strip */}
@@ -72,16 +101,16 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
       <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 md:sticky md:top-7 md:z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 md:h-16 flex items-center justify-between gap-4 md:gap-8">
           {/* Zone 1: Single-line Brand Title */}
-          <button
-            type="button"
-            onClick={() => onNavigate('home')}
+          <a
+            href="#/home"
+            onClick={(e) => handleNavClick(e, 'home')}
             className="flex items-center gap-2.5 text-left whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6E4F] rounded-lg py-1"
           >
             <MediKartLogo />
             <span className="font-display text-lg font-bold tracking-tight text-slate-900">
               MediKart
             </span>
-          </button>
+          </a>
 
           {/* Zone 2: Clean single-line text links (Desktop) */}
           <nav
@@ -90,11 +119,18 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
           >
             {navItems.map((item) => {
               const active = isRouteActive(item.id);
+              const isPrivate =
+                item.id === 'rx-upload' ||
+                item.id === 'cart' ||
+                item.id === 'account' ||
+                item.id === 'admin';
               return (
-                <button
+                <a
                   key={item.id}
-                  type="button"
-                  onClick={() => onNavigate(item.id)}
+                  href={getRouteHref(item.id)}
+                  rel={isPrivate ? 'nofollow' : undefined}
+                  aria-current={active ? 'page' : undefined}
+                  onClick={(e) => handleNavClick(e, item.id)}
                   className={`relative py-2 text-sm font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6E4F] ${
                     active
                       ? 'text-[#0B6E4F]'
@@ -112,7 +148,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0B6E4F] rounded-full"
                     />
                   )}
-                </button>
+                </a>
               );
             })}
           </nav>
@@ -157,11 +193,18 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isRouteActive(item.id);
+            const isPrivate =
+              item.id === 'rx-upload' ||
+              item.id === 'cart' ||
+              item.id === 'account' ||
+              item.id === 'admin';
             return (
-              <button
+              <a
                 key={item.id}
-                type="button"
-                onClick={() => onNavigate(item.id)}
+                href={getRouteHref(item.id)}
+                rel={isPrivate ? 'nofollow' : undefined}
+                aria-current={active ? 'page' : undefined}
+                onClick={(e) => handleNavClick(e, item.id)}
                 className={`relative flex flex-col items-center justify-center min-h-[44px] text-[10px] font-medium tracking-tight transition-colors cursor-pointer ${
                   active ? 'text-[#0B6E4F]' : 'text-slate-500 hover:text-slate-800'
                 }`}
@@ -177,7 +220,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
                 <span className="mt-0.5 truncate max-w-full px-0.5">
                   {item.label}
                 </span>
-              </button>
+              </a>
             );
           })}
         </div>

@@ -6,6 +6,9 @@ interface DemoImageProps {
   alt: string;
   className?: string;
   compact?: boolean;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'auto' | 'sync';
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 export function DemoImage({
@@ -13,6 +16,9 @@ export function DemoImage({
   alt,
   className = '',
   compact = false,
+  loading = 'lazy',
+  decoding = 'async',
+  fetchPriority = 'auto',
 }: DemoImageProps) {
   const [failed, setFailed] = useState(false);
 
@@ -43,6 +49,9 @@ export function DemoImage({
     <img
       src={src}
       alt={alt}
+      loading={loading}
+      decoding={decoding}
+      fetchPriority={fetchPriority}
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
       className={className}

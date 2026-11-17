@@ -321,7 +321,7 @@ export function CataloguePage({
                   >
                     <DemoImage
                       src={med.imageUrl}
-                      alt={`${med.brandName} sample`}
+                      alt={`${med.brandName} (${med.genericComposition}) — ${med.category} sample demo product`}
                       className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200"
                     />
                   </button>

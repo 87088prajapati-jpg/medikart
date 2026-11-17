@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { StoreProvider, useStore } from './context/StoreContext';
+import { applyRouteSeoMetadata } from './lib/seo';
 import { AccountPage } from './pages/AccountPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { CartPage } from './pages/CartPage';
@@ -190,6 +191,13 @@ function MediKartShell() {
     window.addEventListener('hashchange', syncFromHash);
     return () => window.removeEventListener('hashchange', syncFromHash);
   }, [syncFromHash]);
+
+  useEffect(() => {
+    applyRouteSeoMetadata(route, {
+      category: selectedCategory,
+      medicine: selectedMedicine,
+    });
+  }, [route, selectedCategory, selectedMedicine]);
 
   const pushHashIfChanged = (nextHash: string) => {
     if (window.location.hash !== nextHash) {
