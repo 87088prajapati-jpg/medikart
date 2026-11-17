@@ -7,6 +7,7 @@ import {
   ShoppingBag,
   Trash2,
 } from 'lucide-react';
+import { DemoImage } from '../components/DemoImage';
 import { useStore } from '../context/StoreContext';
 import { formatInr } from '../lib/inventoryUtils';
 
@@ -89,70 +90,90 @@ export function CartPage({ onBrowseCatalogue }: CartPageProps) {
             {/* Demo Line Items */}
             <div className="lg:col-span-7 space-y-4">
               <div className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100">
-                {cartItems.map((item) => (
-                  <div
-                    key={item.skuId}
-                    className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div className="space-y-1.5 min-w-0">
-                      <p className="text-xs text-[#0B6E4F] font-medium">
-                        Sample Demo Item
-                      </p>
-                      <h2 className="font-display text-base font-semibold text-slate-900">
-                        {item.brandName}
-                      </h2>
-                      <p className="text-xs text-slate-600">
-                        {item.genericComposition}
-                      </p>
-                      <p className="text-xs font-mono tabular-nums text-slate-500 pt-0.5">
-                        Batch {item.batchNumber} · Exp {item.expiryMonthYear}
-                      </p>
-                    </div>
+                {cartItems.map((item) => {
+                  const matchedProduct = catalogueMedicines.find(
+                    (med) => med.skuId === item.skuId,
+                  );
+                  const thumbnailSrc =
+                    matchedProduct?.imageUrl || item.imageUrl || '';
 
-                    <div className="flex items-center justify-between sm:justify-end gap-5 shrink-0">
-                      {/* Quantity Steppers */}
-                      <div className="inline-flex items-center border border-slate-200 rounded-xl bg-[#F6FBF8]">
-                        <button
-                          type="button"
-                          onClick={() => updateCartQuantity(item.skuId, -1)}
-                          aria-label={`Decrease quantity of ${item.brandName}`}
-                          className="w-10 h-10 flex items-center justify-center text-slate-700 hover:text-[#0B6E4F] cursor-pointer"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="w-9 text-center font-mono text-sm font-semibold text-slate-900 tabular-nums">
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => updateCartQuantity(item.skuId, 1)}
-                          aria-label={`Increase quantity of ${item.brandName}`}
-                          className="w-10 h-10 flex items-center justify-center text-slate-700 hover:text-[#0B6E4F] cursor-pointer"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="text-right min-w-[92px]">
-                        <div className="font-mono text-base font-semibold text-slate-900 tabular-nums">
-                          {formatInr(item.mrpInr * item.quantity)}
+                  return (
+                    <div
+                      key={item.skuId}
+                      className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    >
+                      <div className="flex items-start gap-3.5 sm:gap-4 min-w-0 flex-1">
+                        <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border border-emerald-100 bg-[#F6FBF8]">
+                          <DemoImage
+                            src={thumbnailSrc}
+                            alt={`${item.brandName} product thumbnail`}
+                            compact
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <div className="font-mono text-[11px] text-slate-500 tabular-nums">
-                          {formatInr(item.mrpInr)} each
+
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <p className="text-xs text-[#0B6E4F] font-medium">
+                            Sample Demo Item
+                          </p>
+                          <h2 className="font-display text-base font-semibold text-slate-900 leading-snug">
+                            {item.brandName}
+                          </h2>
+                          <p className="text-xs text-slate-600 line-clamp-2">
+                            {item.genericComposition}
+                          </p>
+                          <p className="text-xs font-mono tabular-nums text-slate-500 pt-0.5">
+                            Batch {item.batchNumber} · Exp{' '}
+                            {item.expiryMonthYear}
+                          </p>
                         </div>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => removeCartItem(item.skuId)}
-                        aria-label={`Remove ${item.brandName}`}
-                        className="p-2 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-5 shrink-0 pt-3 sm:pt-0 border-t border-slate-100 sm:border-t-0">
+                        {/* Quantity Steppers */}
+                        <div className="inline-flex items-center border border-slate-200 rounded-xl bg-[#F6FBF8]">
+                          <button
+                            type="button"
+                            onClick={() => updateCartQuantity(item.skuId, -1)}
+                            aria-label={`Decrease quantity of ${item.brandName}`}
+                            className="w-10 h-10 flex items-center justify-center text-slate-700 hover:text-[#0B6E4F] cursor-pointer"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          <span className="w-9 text-center font-mono text-sm font-semibold text-slate-900 tabular-nums">
+                            {item.quantity}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateCartQuantity(item.skuId, 1)}
+                            aria-label={`Increase quantity of ${item.brandName}`}
+                            className="w-10 h-10 flex items-center justify-center text-slate-700 hover:text-[#0B6E4F] cursor-pointer"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        <div className="text-right min-w-[88px]">
+                          <div className="font-mono text-base font-semibold text-slate-900 tabular-nums">
+                            {formatInr(item.mrpInr * item.quantity)}
+                          </div>
+                          <div className="font-mono text-[11px] text-slate-500 tabular-nums">
+                            {formatInr(item.mrpInr)} each
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => removeCartItem(item.skuId)}
+                          aria-label={`Remove ${item.brandName}`}
+                          className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

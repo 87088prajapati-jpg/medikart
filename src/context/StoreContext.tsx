@@ -103,6 +103,15 @@ function sanitizeGuestCartItem(raw: unknown): DemoCartItem | null {
     return null;
   }
 
+  const rawImageUrl =
+    typeof item.imageUrl === 'string' ? item.imageUrl.trim() : '';
+  const imageUrl =
+    rawImageUrl &&
+    rawImageUrl.length <= 512 &&
+    (rawImageUrl.startsWith('/') || rawImageUrl.startsWith('https://'))
+      ? rawImageUrl
+      : INITIAL_DEMO_MEDICINES.find((m) => m.skuId === skuId)?.imageUrl;
+
   return {
     skuId,
     brandName,
@@ -111,6 +120,7 @@ function sanitizeGuestCartItem(raw: unknown): DemoCartItem | null {
     expiryMonthYear,
     mrpInr,
     quantity,
+    ...(imageUrl ? { imageUrl } : {}),
   };
 }
 
@@ -391,8 +401,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       (snapshot) => {
         const items: DemoCartItem[] = snapshot.docs.map((d) => {
           const data = d.data();
+          const itemSkuId = String(data.skuId);
+          const catalogMatch = INITIAL_DEMO_MEDICINES.find(
+            (m) => m.skuId === itemSkuId,
+          );
           return {
-            skuId: String(data.skuId),
+            skuId: itemSkuId,
             userId: String(data.userId),
             brandName: String(data.brandName),
             genericComposition: String(data.genericComposition),
@@ -400,6 +414,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             expiryMonthYear: String(data.expiryMonthYear),
             mrpInr: Number(data.mrpInr),
             quantity: Number(data.quantity),
+            ...(catalogMatch?.imageUrl ? { imageUrl: catalogMatch.imageUrl } : {}),
           };
         });
         setFirestoreCart(items);
@@ -881,7 +896,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           const found = prev.find((i) => i.skuId === skuId);
           if (found) {
             return prev.map((i) =>
-              i.skuId === skuId ? { ...i, quantity: nextQty } : i,
+              i.skuId === skuId
+                ? {
+                    ...i,
+                    quantity: nextQty,
+                    imageUrl: i.imageUrl || medicine.imageUrl,
+                  }
+                : i,
             );
           }
           return [
@@ -894,6 +915,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
               expiryMonthYear: fefoBatch.expiryMonthYear,
               mrpInr: medicine.mrpInr,
               quantity: 1,
+              imageUrl: medicine.imageUrl,
             },
           ];
         });

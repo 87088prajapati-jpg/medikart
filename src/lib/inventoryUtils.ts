@@ -111,3 +111,30 @@ export function computeInventoryKpis(
     expiredOrQuarantinedUnits,
   };
 }
+
+export function matchesProductSearch(
+  medicine: DemoMedicine,
+  rawQuery: string,
+): boolean {
+  const normalizedQuery = rawQuery.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!normalizedQuery) return true;
+
+  const batchText = medicine.batches.map((b) => b.batchNumber).join(' ');
+  const searchableText = [
+    medicine.brandName,
+    medicine.category,
+    medicine.genericComposition,
+    medicine.manufacturer,
+    medicine.schedule,
+    batchText,
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  if (searchableText.includes(normalizedQuery)) {
+    return true;
+  }
+
+  const tokens = normalizedQuery.split(' ');
+  return tokens.every((token) => searchableText.includes(token));
+}

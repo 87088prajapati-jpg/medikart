@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ArrowUpDown, Plus, Search, X } from 'lucide-react';
 import { DemoImage } from '../components/DemoImage';
 import { useStore } from '../context/StoreContext';
@@ -6,6 +6,7 @@ import {
   formatInr,
   getFefoActiveBatch,
   getNearestValidExpiryTimestamp,
+  matchesProductSearch,
 } from '../lib/inventoryUtils';
 import { MEDICINE_CATEGORIES, MEDICINE_SCHEDULES } from '../lib/validation';
 import type {
@@ -31,6 +32,8 @@ export function CataloguePage({
   onOpenProduct,
 }: CataloguePageProps) {
   const { catalogueMedicines, addToDemoCart } = useStore();
+  const resultsRef = useRef<HTMLElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedSchedule, setSelectedSchedule] = useState<
     MedicineSchedule | 'All'
   >('All');
@@ -38,8 +41,6 @@ export function CataloguePage({
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const filteredMedicines = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-
     const matches = catalogueMedicines.filter((med) => {
       if (selectedCategory !== 'All' && med.category !== selectedCategory) {
         return false;
@@ -47,17 +48,7 @@ export function CataloguePage({
       if (selectedSchedule !== 'All' && med.schedule !== selectedSchedule) {
         return false;
       }
-      if (!q) return true;
-
-      const batchHit = med.batches.some((b) =>
-        b.batchNumber.toLowerCase().includes(q),
-      );
-      return (
-        med.brandName.toLowerCase().includes(q) ||
-        med.genericComposition.toLowerCase().includes(q) ||
-        med.manufacturer.toLowerCase().includes(q) ||
-        batchHit
-      );
+      return matchesProductSearch(med, searchQuery);
     });
 
     const sorted = [...matches];
@@ -95,6 +86,33 @@ export function CataloguePage({
     setSortBy('relevance');
   };
 
+  const commitCatalogueSearch = () => {
+    const trimmed = searchQuery.trim();
+    if (trimmed !== searchQuery) {
+      onSearchQueryChange(trimmed);
+    }
+    searchInputRef.current?.blur();
+    resultsRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+    });
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    commitCatalogueSearch();
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      (e.key === 'Enter' || e.keyCode === 13) &&
+      !e.nativeEvent.isComposing
+    ) {
+      e.preventDefault();
+      commitCatalogueSearch();
+    }
+  };
+
   return (
     <div className="bg-white min-h-[calc(100vh-140px)]">
       {/* Catalogue Header & Search Controls */}
@@ -121,18 +139,31 @@ export function CataloguePage({
 
           {/* Search & Sort Bar */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-            <div className="lg:col-span-8 relative">
+            <form
+              action="#"
+              onSubmit={handleSearchSubmit}
+              role="search"
+              aria-label="Search medicine catalogue"
+              className="lg:col-span-8 relative"
+            >
               <Search
                 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 aria-hidden="true"
               />
               <input
+                ref={searchInputRef}
                 type="search"
+                enterKeyHint="search"
+                inputMode="search"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
                 value={searchQuery}
                 onChange={(e) => onSearchQueryChange(e.target.value)}
-                placeholder="Search by brand name, generic salt composition, manufacturer, or batch number..."
+                onKeyDown={handleSearchKeyDown}
+                placeholder="Search by product name, category, generic salt, manufacturer, or batch..."
                 aria-label="Search medicine catalogue"
-                className="w-full min-h-[44px] pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B6E4F] focus:ring-2 focus:ring-[#0B6E4F]/20"
+                className="w-full min-h-[44px] pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B6E4F] focus:ring-2 focus:ring-[#0B6E4F]/20 [&::-webkit-search-cancel-button]:appearance-none"
               />
               {searchQuery && (
                 <button
@@ -144,7 +175,7 @@ export function CataloguePage({
                   <X className="w-4 h-4" />
                 </button>
               )}
-            </div>
+            </form>
 
             <div className="lg:col-span-4 relative flex items-center">
               <ArrowUpDown
@@ -230,14 +261,18 @@ export function CataloguePage({
       </section>
 
       {/* Catalogue Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <section
+        ref={resultsRef}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
+      >
         <div className="flex items-center justify-between mb-6 text-sm text-slate-600">
-          <span>
+          <span aria-live="polite">
             Showing{' '}
             <strong className="font-mono tabular-nums text-slate-900">
               {filteredMedicines.length}
             </strong>{' '}
             sample demo items
+            {searchQuery.trim() ? ` for "${searchQuery.trim()}"` : ''}
           </span>
           {(searchQuery ||
             selectedCategory !== 'All' ||
@@ -255,16 +290,17 @@ export function CataloguePage({
         {filteredMedicines.length === 0 ? (
           <div className="bg-[#F6FBF8] border border-emerald-100 rounded-2xl p-10 text-center max-w-xl mx-auto">
             <h2 className="font-display text-lg font-semibold text-slate-900">
-              No matching demo products found
+              No products found
             </h2>
             <p className="text-sm text-slate-600 mt-2">
-              Try searching a different generic salt, manufacturer, or batch
-              number, or clear the active category and schedule filters.
+              {searchQuery.trim()
+                ? `No sample demo products matched "${searchQuery.trim()}". Try searching a different product name, category, generic salt, manufacturer, or batch number.`
+                : 'No sample demo products matched the active category and schedule filters.'}
             </p>
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-5 px-4 py-2.5 rounded-xl bg-[#0B6E4F] text-white text-sm font-medium hover:bg-[#064E3B] transition-colors cursor-pointer"
+              className="mt-5 min-h-[42px] px-4 py-2.5 rounded-xl bg-[#0B6E4F] text-white text-sm font-medium hover:bg-[#064E3B] transition-colors cursor-pointer"
             >
               Show All Demo Items
             </button>

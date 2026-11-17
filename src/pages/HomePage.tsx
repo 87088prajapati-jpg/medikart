@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Activity,
   ArrowRight,
@@ -11,6 +11,7 @@ import {
   Sparkles,
   Stethoscope,
   Thermometer,
+  X,
 } from 'lucide-react';
 import { DemoImage } from '../components/DemoImage';
 import {
@@ -18,7 +19,11 @@ import {
   HERO_BANNER_IMAGE,
 } from '../data/demoCatalogue';
 import { useStore } from '../context/StoreContext';
-import { formatInr, getFefoActiveBatch } from '../lib/inventoryUtils';
+import {
+  formatInr,
+  getFefoActiveBatch,
+  matchesProductSearch,
+} from '../lib/inventoryUtils';
 import type { DemoMedicine, MedicineCategory } from '../types/pharmacy';
 
 interface HomePageProps {
@@ -77,14 +82,38 @@ export function HomePage({
   onOpenProduct,
 }: HomePageProps) {
   const { selectedCity, catalogueMedicines, addToDemoCart } = useStore();
+  const heroInputRef = useRef<HTMLInputElement | null>(null);
   const [heroQuery, setHeroQuery] = useState('');
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
   const featuredMedicines = catalogueMedicines.filter((m) => m.featured).slice(0, 6);
 
+  const trimmedHeroQuery = heroQuery.trim();
+  const liveHeroMatches = useMemo(() => {
+    if (!trimmedHeroQuery) return [];
+    return catalogueMedicines.filter((med) =>
+      matchesProductSearch(med, trimmedHeroQuery),
+    );
+  }, [catalogueMedicines, trimmedHeroQuery]);
+
+  const submitHeroSearch = () => {
+    heroInputRef.current?.blur();
+    onSearchToCatalogue(trimmedHeroQuery);
+  };
+
   const handleHeroSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearchToCatalogue(heroQuery.trim());
+    submitHeroSearch();
+  };
+
+  const handleHeroKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      (e.key === 'Enter' || e.keyCode === 13) &&
+      !e.nativeEvent.isComposing
+    ) {
+      e.preventDefault();
+      submitHeroSearch();
+    }
   };
 
   const handleQuickAdd = (med: DemoMedicine) => {
@@ -125,32 +154,116 @@ export function HomePage({
               </div>
 
               {/* Search Trigger */}
-              <form
-                onSubmit={handleHeroSearch}
-                className="flex flex-col sm:flex-row gap-2.5 max-w-xl"
-              >
-                <div className="relative flex-1">
-                  <Search
-                    className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                    aria-hidden="true"
-                  />
-                  <input
-                    type="search"
-                    value={heroQuery}
-                    onChange={(e) => setHeroQuery(e.target.value)}
-                    placeholder="Search brand, salt (e.g. Telmisartan), manufacturer, or batch..."
-                    aria-label="Search demo medicines"
-                    className="w-full min-h-[46px] pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B6E4F] focus:ring-2 focus:ring-[#0B6E4F]/20"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#0B6E4F] text-white text-sm font-medium hover:bg-[#064E3B] transition-colors whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center justify-center gap-2"
+              <div className="space-y-2.5 max-w-xl">
+                <form
+                  action="#"
+                  onSubmit={handleHeroSearch}
+                  role="search"
+                  aria-label="Search demo medicines"
+                  className="flex flex-col sm:flex-row gap-2.5"
                 >
-                  <span>Search Catalogue</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
+                  <div className="relative flex-1">
+                    <Search
+                      className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                    <input
+                      ref={heroInputRef}
+                      type="search"
+                      enterKeyHint="search"
+                      inputMode="search"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      value={heroQuery}
+                      onChange={(e) => setHeroQuery(e.target.value)}
+                      onKeyDown={handleHeroKeyDown}
+                      placeholder="Search product name, category (e.g. Cardiac), salt, or batch..."
+                      aria-label="Search demo medicines"
+                      className="w-full min-h-[46px] pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B6E4F] focus:ring-2 focus:ring-[#0B6E4F]/20 [&::-webkit-search-cancel-button]:appearance-none"
+                    />
+                    {heroQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setHeroQuery('')}
+                        aria-label="Clear search"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    className="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#0B6E4F] text-white text-sm font-medium hover:bg-[#064E3B] transition-colors whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center justify-center gap-2"
+                  >
+                    <span>Search Catalogue</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+
+                {trimmedHeroQuery && (
+                  <div
+                    role="region"
+                    aria-live="polite"
+                    aria-label="Instant search results"
+                    className="bg-white border border-emerald-200 rounded-xl shadow-sm overflow-hidden"
+                  >
+                    {liveHeroMatches.length === 0 ? (
+                      <div className="px-4 py-3.5 text-sm text-slate-600 flex items-center justify-between gap-3">
+                        <span>
+                          <strong className="font-semibold text-slate-900">
+                            No products found
+                          </strong>{' '}
+                          for &ldquo;{trimmedHeroQuery}&rdquo;.
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setHeroQuery('')}
+                          className="text-xs font-medium text-[#0B6E4F] hover:text-[#064E3B] whitespace-nowrap cursor-pointer"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-slate-100">
+                        {liveHeroMatches.slice(0, 5).map((med) => (
+                          <button
+                            key={med.skuId}
+                            type="button"
+                            onClick={() => onOpenProduct(med)}
+                            className="w-full px-4 py-2.5 text-left hover:bg-[#F6FBF8] transition-colors flex items-center justify-between gap-3 cursor-pointer"
+                          >
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-slate-900 truncate">
+                                {med.brandName}
+                              </p>
+                              <p className="text-xs text-slate-500 truncate">
+                                {med.category} · {med.genericComposition}
+                              </p>
+                            </div>
+                            <span className="font-mono text-xs font-semibold text-[#0B6E4F] shrink-0 tabular-nums">
+                              {formatInr(med.mrpInr)}
+                            </span>
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={submitHeroSearch}
+                          className="w-full px-4 py-2.5 bg-[#F6FBF8] text-xs font-medium text-[#0B6E4F] hover:text-[#064E3B] flex items-center justify-between cursor-pointer"
+                        >
+                          <span>
+                            View all {liveHeroMatches.length} matching demo{' '}
+                            {liveHeroMatches.length === 1 ? 'product' : 'products'} in
+                            Catalogue
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               <div className="flex flex-wrap items-center gap-4 pt-1 text-sm">
                 <button

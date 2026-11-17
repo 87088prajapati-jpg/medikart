@@ -53,6 +53,7 @@ export interface DemoCartItem {
   expiryMonthYear: string;
   mrpInr: number;
   quantity: number;
+  imageUrl?: string;
 }
 
 export type RxSampleType = 'sample_cardiac' | 'sample_fever' | 'local_preview_marker';

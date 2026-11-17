@@ -231,20 +231,23 @@ function MediKartShell() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    if (route !== 'catalogue') return;
+    const nextHash = buildCatalogueHash(selectedCategory, searchQuery);
+    const timer = window.setTimeout(() => {
+      if (window.location.hash !== nextHash) {
+        window.history.replaceState(null, '', nextHash);
+      }
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [route, selectedCategory, searchQuery]);
+
   const handleCatalogueSearchChange = (q: string) => {
     setSearchQuery(q);
-    const nextHash = buildCatalogueHash(selectedCategory, q);
-    if (window.location.hash !== nextHash) {
-      window.history.replaceState(null, '', nextHash);
-    }
   };
 
   const handleCatalogueCategoryChange = (cat: MedicineCategory | 'All') => {
     setSelectedCategory(cat);
-    const nextHash = buildCatalogueHash(cat, searchQuery);
-    if (window.location.hash !== nextHash) {
-      window.history.replaceState(null, '', nextHash);
-    }
   };
 
   return (
