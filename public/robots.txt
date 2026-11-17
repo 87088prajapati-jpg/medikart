@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://medikart-india.netlify.app/sitemap.xml
