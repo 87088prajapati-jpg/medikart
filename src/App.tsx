@@ -4,10 +4,12 @@ import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { StoreProvider, useStore } from './context/StoreContext';
 import { applyRouteSeoMetadata } from './lib/seo';
+import { AboutPage } from './pages/AboutPage';
 import { AccountPage } from './pages/AccountPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { CartPage } from './pages/CartPage';
 import { CataloguePage } from './pages/CataloguePage';
+import { ContactPage } from './pages/ContactPage';
 import { HomePage } from './pages/HomePage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { RxUploadPage } from './pages/RxUploadPage';
@@ -69,6 +71,10 @@ function buildRouteHash(
       return '#/cart';
     case 'account':
       return '#/account';
+    case 'about':
+      return '#/about';
+    case 'contact':
+      return '#/contact';
     case 'staff-login':
       return '#/staff-login';
     case 'admin':
@@ -141,6 +147,12 @@ function parseHashLocation(
   }
   if (normalizedPath === '/account') {
     return { route: 'account', category: 'All', searchQuery: '', medicine: null };
+  }
+  if (normalizedPath === '/about') {
+    return { route: 'about', category: 'All', searchQuery: '', medicine: null };
+  }
+  if (normalizedPath === '/contact') {
+    return { route: 'contact', category: 'All', searchQuery: '', medicine: null };
   }
   if (normalizedPath === '/staff-login') {
     return { route: 'staff-login', category: 'All', searchQuery: '', medicine: null };
@@ -307,6 +319,20 @@ function MediKartShell() {
         )}
 
         {route === 'account' && <AccountPage />}
+
+        {route === 'about' && (
+          <AboutPage
+            onExploreCatalogue={() => navigate('catalogue')}
+            onOpenContact={() => navigate('contact')}
+          />
+        )}
+
+        {route === 'contact' && (
+          <ContactPage
+            onExploreAbout={() => navigate('about')}
+            onBrowseCatalogue={() => navigate('catalogue')}
+          />
+        )}
 
         {route === 'staff-login' && (
           <StaffLoginPage

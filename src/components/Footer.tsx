@@ -70,6 +70,30 @@ export function Footer({ onNavigate }: FooterProps) {
               </li>
               <li>
                 <a
+                  href="#/about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('about');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-block"
+                >
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#/contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('contact');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-block"
+                >
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a
                   href="#/account"
                   rel="nofollow"
                   onClick={(e) => {

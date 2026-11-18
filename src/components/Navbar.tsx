@@ -1,11 +1,16 @@
+import { useState } from 'react';
 import {
   FileText,
   Home,
+  Info,
   LayoutGrid,
+  Mail,
   MapPin,
+  Menu,
   ShieldCheck,
   ShoppingBag,
   User,
+  X,
 } from 'lucide-react';
 import { DEMO_CITIES } from '../lib/validation';
 import { useStore } from '../context/StoreContext';
@@ -40,6 +45,7 @@ export function MediKartLogo() {
 export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
   const { selectedCity, setSelectedCity, cartCount, isVerifiedAdmin } =
     useStore();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems: { id: AppRoute; label: string; icon: typeof Home }[] = [
     { id: 'home', label: 'Home', icon: Home },
@@ -49,9 +55,20 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
     { id: 'account', label: 'Account', icon: User },
   ];
 
+  const desktopNavItems: { id: AppRoute; label: string }[] = [
+    { id: 'home', label: 'Home' },
+    { id: 'catalogue', label: 'Catalogue' },
+    { id: 'rx-upload', label: 'Rx Upload' },
+    { id: 'cart', label: 'Cart' },
+    { id: 'account', label: 'Account' },
+    { id: 'about', label: 'About' },
+    { id: 'contact', label: 'Contact' },
+  ];
+
   // Admin tab is rendered ONLY for authenticated users with a verified Admin role
   if (isVerifiedAdmin) {
     navItems.push({ id: 'admin', label: 'Admin', icon: ShieldCheck });
+    desktopNavItems.push({ id: 'admin', label: 'Admin' });
   }
 
   const isRouteActive = (id: AppRoute) => {
@@ -71,6 +88,10 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
         return '#/cart';
       case 'account':
         return '#/account';
+      case 'about':
+        return '#/about';
+      case 'contact':
+        return '#/contact';
       case 'staff-login':
         return '#/staff-login';
       case 'admin':
@@ -85,6 +106,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
     id: AppRoute,
   ) => {
     e.preventDefault();
+    setMobileMenuOpen(false);
     onNavigate(id);
   };
 
@@ -115,9 +137,9 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
           {/* Zone 2: Clean single-line text links (Desktop) */}
           <nav
             aria-label="Primary Navigation"
-            className="hidden md:flex items-center gap-6"
+            className="hidden md:flex items-center md:gap-4 lg:gap-6"
           >
-            {navItems.map((item) => {
+            {desktopNavItems.map((item) => {
               const active = isRouteActive(item.id);
               const isPrivate =
                 item.id === 'rx-upload' ||
@@ -131,7 +153,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
                   rel={isPrivate ? 'nofollow' : undefined}
                   aria-current={active ? 'page' : undefined}
                   onClick={(e) => handleNavClick(e, item.id)}
-                  className={`relative py-2 text-sm font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6E4F] ${
+                  className={`relative py-2 text-xs lg:text-sm font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6E4F] ${
                     active
                       ? 'text-[#0B6E4F]'
                       : 'text-slate-600 hover:text-slate-900'
@@ -153,8 +175,8 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
             })}
           </nav>
 
-          {/* Zone 3: 1 Primary Contextual Action (Demo City Selector) */}
-          <div className="flex items-center shrink-0">
+          {/* Zone 3: 1 Primary Contextual Action (Demo City Selector + Mobile More Toggle) */}
+          <div className="flex items-center gap-2 shrink-0">
             <label htmlFor="header-city-select" className="sr-only">
               Select demo city
             </label>
@@ -176,8 +198,59 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
                 ))}
               </select>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-info-drawer"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:border-[#0B6E4F] hover:text-[#0B6E4F] transition-colors cursor-pointer"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" aria-hidden="true" />
+              ) : (
+                <Menu className="w-5 h-5" aria-hidden="true" />
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Info Drawer (About Us & Contact Us) */}
+        {mobileMenuOpen && (
+          <nav
+            id="mobile-info-drawer"
+            aria-label="Mobile Secondary Navigation"
+            className="md:hidden border-t border-slate-200 bg-[#F6FBF8] px-4 py-3 space-y-1"
+          >
+            <a
+              href="#/about"
+              aria-current={isRouteActive('about') ? 'page' : undefined}
+              onClick={(e) => handleNavClick(e, 'about')}
+              className={`min-h-[44px] px-3 py-2 rounded-xl text-sm font-medium flex items-center gap-3 transition-colors ${
+                isRouteActive('about')
+                  ? 'bg-white text-[#0B6E4F] border border-emerald-200'
+                  : 'text-slate-700 hover:bg-white'
+              }`}
+            >
+              <Info className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>About Us</span>
+            </a>
+            <a
+              href="#/contact"
+              aria-current={isRouteActive('contact') ? 'page' : undefined}
+              onClick={(e) => handleNavClick(e, 'contact')}
+              className={`min-h-[44px] px-3 py-2 rounded-xl text-sm font-medium flex items-center gap-3 transition-colors ${
+                isRouteActive('contact')
+                  ? 'bg-white text-[#0B6E4F] border border-emerald-200'
+                  : 'text-slate-700 hover:bg-white'
+              }`}
+            >
+              <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>Contact Us</span>
+            </a>
+          </nav>
+        )}
       </header>
 
       {/* Mobile Fixed Bottom Tab Bar */}

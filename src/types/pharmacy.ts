@@ -85,6 +85,8 @@ export type AppRoute =
   | 'rx-upload'
   | 'cart'
   | 'account'
+  | 'about'
+  | 'contact'
   | 'staff-login'
   | 'admin';
 

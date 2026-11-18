@@ -77,6 +77,20 @@ export function getSeoMetadataForRoute(
           'Manage your MediKart demo customer profile using Firebase Email and Password authentication.',
         robots: 'noindex, nofollow',
       };
+    case 'about':
+      return {
+        title: 'About MediKart India — Demo Pharmacy Catalogue Showcase',
+        description:
+          'Learn about MediKart India, an online pharmacy catalogue and medicine information showcase in demo mode with sales and checkout disabled.',
+        robots: 'index, follow',
+      };
+    case 'contact':
+      return {
+        title: 'Contact Us — MediKart India Demo Pharmacy Catalogue',
+        description:
+          "Preview MediKart India's local demo contact form. Messages are not sent, transmitted, or stored in demo mode.",
+        robots: 'index, follow',
+      };
     case 'staff-login':
     case 'admin':
       return {
