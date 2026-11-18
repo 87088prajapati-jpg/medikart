@@ -18,9 +18,10 @@ export function getSeoMetadataForRoute(
   switch (route) {
     case 'home':
       return {
-        title: 'MediKart — Indian Online Pharmacy Demo Catalogue',
+        title:
+          'MediKart India – Online Pharmacy Catalogue & Medicine Information',
         description:
-          "Browse MediKart's Indian online pharmacy demo catalogue, generic compositions, and FEFO batch records. Demo showcase only; sales and checkout disabled.",
+          "Explore MediKart India's demo pharmacy catalogue. Browse medicine categories, product information and a simple, mobile-friendly catalogue experience.",
         robots: 'index, follow',
       };
     case 'catalogue': {
