@@ -92,6 +92,12 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
         return '#/about';
       case 'contact':
         return '#/contact';
+      case 'privacy-policy':
+        return '#/privacy-policy';
+      case 'terms-and-conditions':
+        return '#/terms-and-conditions';
+      case 'disclaimer':
+        return '#/disclaimer';
       case 'staff-login':
         return '#/staff-login';
       case 'admin':

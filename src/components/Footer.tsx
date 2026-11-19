@@ -117,7 +117,45 @@ export function Footer({ onNavigate }: FooterProps) {
               registered pharmacist supervision, and premises approvals must be
               independently verified with statutory authorities.
             </p>
-            <div className="pt-2">
+            <ul className="flex flex-wrap items-center gap-x-5 gap-y-1 pt-1 text-sm text-emerald-100/85">
+              <li>
+                <a
+                  href="#/privacy-policy"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('privacy-policy');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-flex items-center min-h-[44px]"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#/terms-and-conditions"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('terms-and-conditions');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-flex items-center min-h-[44px]"
+                >
+                  Terms &amp; Conditions
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#/disclaimer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('disclaimer');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer inline-flex items-center min-h-[44px]"
+                >
+                  Disclaimer
+                </a>
+              </li>
+            </ul>
+            <div className="pt-1">
               <a
                 href="#/staff-login"
                 rel="nofollow"

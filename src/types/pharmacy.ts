@@ -87,6 +87,9 @@ export type AppRoute =
   | 'account'
   | 'about'
   | 'contact'
+  | 'privacy-policy'
+  | 'terms-and-conditions'
+  | 'disclaimer'
   | 'staff-login'
   | 'admin';
 

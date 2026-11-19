@@ -91,6 +91,27 @@ export function getSeoMetadataForRoute(
           "Preview MediKart India's local demo contact form. Messages are not sent, transmitted, or stored in demo mode.",
         robots: 'index, follow',
       };
+    case 'privacy-policy':
+      return {
+        title: 'Privacy Policy — MediKart India Demo Pharmacy Catalogue',
+        description:
+          'Read the MediKart India Privacy Policy. Learn about local-only Rx previews, non-stored demo contact forms, and demo browsing scope.',
+        robots: 'index, follow',
+      };
+    case 'terms-and-conditions':
+      return {
+        title: 'Terms & Conditions — MediKart India Demo Pharmacy Catalogue',
+        description:
+          'Read the MediKart India Terms & Conditions. Catalogue-only demo platform with no medicine sales, checkout, payments, or order fulfilment.',
+        robots: 'index, follow',
+      };
+    case 'disclaimer':
+      return {
+        title: 'Disclaimer — MediKart India Demo Pharmacy Catalogue',
+        description:
+          'Read the MediKart India Disclaimer. Content is general demo information only and not a substitute for qualified medical or pharmacist advice.',
+        robots: 'index, follow',
+      };
     case 'staff-login':
     case 'admin':
       return {

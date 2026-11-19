@@ -10,10 +10,13 @@ import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { CartPage } from './pages/CartPage';
 import { CataloguePage } from './pages/CataloguePage';
 import { ContactPage } from './pages/ContactPage';
+import { DisclaimerPage } from './pages/DisclaimerPage';
 import { HomePage } from './pages/HomePage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { RxUploadPage } from './pages/RxUploadPage';
 import { StaffLoginPage } from './pages/StaffLoginPage';
+import { TermsPage } from './pages/TermsPage';
 import type {
   AppRoute,
   DemoMedicine,
@@ -75,6 +78,12 @@ function buildRouteHash(
       return '#/about';
     case 'contact':
       return '#/contact';
+    case 'privacy-policy':
+      return '#/privacy-policy';
+    case 'terms-and-conditions':
+      return '#/terms-and-conditions';
+    case 'disclaimer':
+      return '#/disclaimer';
     case 'staff-login':
       return '#/staff-login';
     case 'admin':
@@ -153,6 +162,30 @@ function parseHashLocation(
   }
   if (normalizedPath === '/contact') {
     return { route: 'contact', category: 'All', searchQuery: '', medicine: null };
+  }
+  if (normalizedPath === '/privacy-policy') {
+    return {
+      route: 'privacy-policy',
+      category: 'All',
+      searchQuery: '',
+      medicine: null,
+    };
+  }
+  if (normalizedPath === '/terms-and-conditions') {
+    return {
+      route: 'terms-and-conditions',
+      category: 'All',
+      searchQuery: '',
+      medicine: null,
+    };
+  }
+  if (normalizedPath === '/disclaimer') {
+    return {
+      route: 'disclaimer',
+      category: 'All',
+      searchQuery: '',
+      medicine: null,
+    };
   }
   if (normalizedPath === '/staff-login') {
     return { route: 'staff-login', category: 'All', searchQuery: '', medicine: null };
@@ -331,6 +364,30 @@ function MediKartShell() {
           <ContactPage
             onExploreAbout={() => navigate('about')}
             onBrowseCatalogue={() => navigate('catalogue')}
+          />
+        )}
+
+        {route === 'privacy-policy' && (
+          <PrivacyPolicyPage
+            onBrowseCatalogue={() => navigate('catalogue')}
+            onOpenTerms={() => navigate('terms-and-conditions')}
+            onOpenDisclaimer={() => navigate('disclaimer')}
+          />
+        )}
+
+        {route === 'terms-and-conditions' && (
+          <TermsPage
+            onBrowseCatalogue={() => navigate('catalogue')}
+            onOpenPrivacyPolicy={() => navigate('privacy-policy')}
+            onOpenDisclaimer={() => navigate('disclaimer')}
+          />
+        )}
+
+        {route === 'disclaimer' && (
+          <DisclaimerPage
+            onBrowseCatalogue={() => navigate('catalogue')}
+            onOpenPrivacyPolicy={() => navigate('privacy-policy')}
+            onOpenTerms={() => navigate('terms-and-conditions')}
           />
         )}
 
