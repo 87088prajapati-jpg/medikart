@@ -4,8 +4,16 @@ import fs from 'fs';
 import path from 'path';
 import {defineConfig} from 'vite';
 
-export default defineConfig(() => {
+export default defineConfig(({ command, mode }) => {
+  const allowAdminSandbox =
+    command === 'serve' &&
+    mode !== 'production' &&
+    process.env.VITE_ENABLE_ADMIN_SANDBOX === 'true';
+
   return {
+    define: {
+      __ENABLE_ADMIN_SANDBOX__: JSON.stringify(allowAdminSandbox),
+    },
     plugins: [
       react(),
       tailwindcss(),

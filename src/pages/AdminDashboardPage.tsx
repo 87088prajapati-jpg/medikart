@@ -125,8 +125,10 @@ export function AdminDashboardPage({
     );
   }, [adminInventory, searchTerm]);
 
-  // Strict Access Gate: Never render Admin dashboard if neither verified Admin nor explicit Staff Sandbox
-  if (!isVerifiedAdmin && !adminSandboxActive) {
+  const allowDevSandbox = __ENABLE_ADMIN_SANDBOX__ && adminSandboxActive;
+
+  // Strict Access Gate: Never render Admin dashboard if neither verified Admin nor DEV sandbox
+  if (!isVerifiedAdmin && !allowDevSandbox) {
     return (
       <div className="bg-white min-h-[calc(100vh-140px)] py-16 px-4">
         <div className="max-w-lg mx-auto bg-white border border-red-200 rounded-2xl p-8 text-center space-y-4">
@@ -214,9 +216,9 @@ export function AdminDashboardPage({
             <div className="flex items-center gap-2 text-xs font-medium text-emerald-200">
               <ShieldCheck className="w-4 h-4" />
               <span>
-                {isVerifiedAdmin
-                  ? 'Verified Admin Session · Firestore RBAC Active'
-                  : 'DEMO MODE · Unverified Local Sandbox (No Firestore Admin Access)'}
+                {__ENABLE_ADMIN_SANDBOX__ && !isVerifiedAdmin
+                  ? 'DEMO MODE · Unverified Local Sandbox (No Firestore Admin Access)'
+                  : 'Verified Admin Session · Firestore RBAC Active'}
               </span>
             </div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight mt-1">
@@ -245,7 +247,7 @@ export function AdminDashboardPage({
               <PackagePlus className="w-4 h-4" />
               <span>Add Demo SKU</span>
             </button>
-            {!isVerifiedAdmin && adminSandboxActive && (
+            {__ENABLE_ADMIN_SANDBOX__ && !isVerifiedAdmin && adminSandboxActive && (
               <button
                 type="button"
                 onClick={() => {

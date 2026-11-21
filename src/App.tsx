@@ -203,11 +203,18 @@ function parseHashLocation(
 }
 
 function MediKartShell() {
-  const { catalogueMedicines } = useStore();
+  const {
+    catalogueMedicines,
+    authReady,
+    isVerifiedAdmin,
+    adminSandboxActive,
+  } = useStore();
   const initialParsed = parseHashLocation(
     window.location.hash,
     catalogueMedicines,
   );
+  const canAccessAdminRoute =
+    isVerifiedAdmin || (__ENABLE_ADMIN_SANDBOX__ && adminSandboxActive);
 
   const [route, setRoute] = useState<AppRoute>(initialParsed.route);
   const [searchQuery, setSearchQuery] = useState(initialParsed.searchQuery);
@@ -236,6 +243,14 @@ function MediKartShell() {
     window.addEventListener('hashchange', syncFromHash);
     return () => window.removeEventListener('hashchange', syncFromHash);
   }, [syncFromHash]);
+
+  useEffect(() => {
+    if (!authReady) return;
+    if (route === 'admin' && !canAccessAdminRoute) {
+      setRoute('home');
+      window.history.replaceState(null, '', '#/home');
+    }
+  }, [authReady, route, canAccessAdminRoute]);
 
   useEffect(() => {
     applyRouteSeoMetadata(route, {
@@ -394,12 +409,25 @@ function MediKartShell() {
         {route === 'staff-login' && (
           <StaffLoginPage
             onVerifiedAdminSuccess={() => navigate('admin')}
-            onEnterDemoSandbox={() => navigate('admin')}
+            onEnterDemoSandbox={() => {
+              if (__ENABLE_ADMIN_SANDBOX__) {
+                navigate('admin');
+              }
+            }}
             onBackHome={() => navigate('home')}
           />
         )}
 
-        {route === 'admin' && (
+        {route === 'admin' && !authReady && (
+          <div className="max-w-3xl mx-auto px-4 py-16">
+            <div className="bg-[#F6FBF8] border border-emerald-100 rounded-2xl p-8 animate-pulse space-y-4">
+              <div className="h-6 bg-emerald-100 rounded w-1/3" />
+              <div className="h-4 bg-emerald-100 rounded w-2/3" />
+            </div>
+          </div>
+        )}
+
+        {route === 'admin' && authReady && canAccessAdminRoute && (
           <AdminDashboardPage
             onExitSandbox={() => navigate('home')}
             onGoToStaffLogin={() => navigate('staff-login')}

@@ -284,7 +284,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [isVerifiedAdmin, setIsVerifiedAdmin] = useState(false);
-  const [adminSandboxActive, setAdminSandboxActive] = useState(false);
+  const [adminSandboxActiveState, setAdminSandboxActiveState] = useState(false);
+  const adminSandboxActive = __ENABLE_ADMIN_SANDBOX__
+    ? adminSandboxActiveState
+    : false;
+
+  const setAdminSandboxActive = useCallback((active: boolean) => {
+    if (!__ENABLE_ADMIN_SANDBOX__) {
+      setAdminSandboxActiveState(false);
+      return;
+    }
+    setAdminSandboxActiveState(active);
+  }, []);
 
   const [guestCart, setGuestCart] = useState<DemoCartItem[]>(() =>
     loadStoredGuestCart(),

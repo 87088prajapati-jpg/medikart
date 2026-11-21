@@ -34,6 +34,7 @@ export function StaffLoginPage({
   };
 
   const handleOpenSandbox = () => {
+    if (!__ENABLE_ADMIN_SANDBOX__) return;
     setAdminSandboxActive(true);
     onEnterDemoSandbox();
   };
@@ -74,9 +75,19 @@ export function StaffLoginPage({
         </div>
       </section>
 
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <section
+        className={`mx-auto px-4 sm:px-6 lg:px-8 py-10 ${
+          __ENABLE_ADMIN_SANDBOX__
+            ? 'max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start'
+            : 'max-w-xl'
+        }`}
+      >
         {/* Verified Server-Side Admin Login */}
-        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-5">
+        <div
+          className={`${
+            __ENABLE_ADMIN_SANDBOX__ ? 'lg:col-span-7' : ''
+          } bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-5`}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#F6FBF8] border border-emerald-200 text-[#0B6E4F] flex items-center justify-center">
               <LockKeyhole className="w-5 h-5" />
@@ -151,34 +162,8 @@ export function StaffLoginPage({
             Admin role. Admin privileges can only be provisioned via trusted
             server-side Firebase Admin tooling.
           </p>
-        </div>
 
-        {/* Isolated Local Demo Mode Fallback */}
-        <div className="lg:col-span-5 bg-[#F6FBF8] border border-emerald-200 rounded-2xl p-6 space-y-4">
-          <p className="text-xs font-semibold text-[#0B6E4F]">
-            Demo Evaluation Mode
-          </p>
-          <h2 className="font-display text-lg font-bold text-slate-900">
-            Admin Inventory UI Sandbox
-          </h2>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            When trusted server-side Admin authorization is not yet provisioned
-            for your session, you can inspect the Admin KPIs, FEFO batch
-            steppers, quarantine controls, and Statutory Legal Gate checklist in
-            strictly isolated local demo mode.
-          </p>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            This sandbox uses local browser state only — it does not grant Admin
-            permissions, modify user roles, or read/write Firestore inventory.
-          </p>
-          <div className="pt-2 space-y-2.5">
-            <button
-              type="button"
-              onClick={handleOpenSandbox}
-              className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#0B6E4F] bg-white text-[#0B6E4F] text-sm font-medium hover:bg-emerald-50 transition-colors cursor-pointer"
-            >
-              Open Admin Demo Mode (Local Sandbox)
-            </button>
+          {!__ENABLE_ADMIN_SANDBOX__ && (
             <button
               type="button"
               onClick={onBackHome}
@@ -186,8 +171,47 @@ export function StaffLoginPage({
             >
               Return to Storefront
             </button>
-          </div>
+          )}
         </div>
+
+        {/* Isolated Local Demo Mode Fallback (Development/Evaluation Builds Only) */}
+        {__ENABLE_ADMIN_SANDBOX__ && (
+          <div className="lg:col-span-5 bg-[#F6FBF8] border border-emerald-200 rounded-2xl p-6 space-y-4">
+            <p className="text-xs font-semibold text-[#0B6E4F]">
+              Demo Evaluation Mode
+            </p>
+            <h2 className="font-display text-lg font-bold text-slate-900">
+              Admin Inventory UI Sandbox
+            </h2>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              When trusted server-side Admin authorization is not yet
+              provisioned for your session, you can inspect the Admin KPIs, FEFO
+              batch steppers, quarantine controls, and Statutory Legal Gate
+              checklist in strictly isolated local demo mode.
+            </p>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              This sandbox uses local browser state only — it does not grant
+              Admin permissions, modify user roles, or read/write Firestore
+              inventory.
+            </p>
+            <div className="pt-2 space-y-2.5">
+              <button
+                type="button"
+                onClick={handleOpenSandbox}
+                className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#0B6E4F] bg-white text-[#0B6E4F] text-sm font-medium hover:bg-emerald-50 transition-colors cursor-pointer"
+              >
+                Open Admin Demo Mode (Local Sandbox)
+              </button>
+              <button
+                type="button"
+                onClick={onBackHome}
+                className="w-full min-h-[40px] px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 cursor-pointer"
+              >
+                Return to Storefront
+              </button>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

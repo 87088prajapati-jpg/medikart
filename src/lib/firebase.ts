@@ -1,9 +1,51 @@
 import { initializeApp } from 'firebase/app';
+import {
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider,
+  type AppCheck,
+} from 'firebase/app-check';
 import { getAuth } from 'firebase/auth';
 import { doc, getDocFromServer, getFirestore } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
+
+if (import.meta.env.DEV && !import.meta.env.PROD && typeof self !== 'undefined') {
+  const devDebugToken = import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN?.trim();
+  if (devDebugToken) {
+    (
+      self as typeof globalThis & {
+        FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean | string;
+      }
+    ).FIREBASE_APPCHECK_DEBUG_TOKEN =
+      devDebugToken === 'true' ? true : devDebugToken;
+  }
+}
+
+const recaptchaEnterpriseSiteKey =
+  import.meta.env.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY?.trim() ||
+  firebaseConfig.recaptchaSiteKey?.trim() ||
+  '';
+
+export let appCheck: AppCheck | null = null;
+
+if (typeof window !== 'undefined' && recaptchaEnterpriseSiteKey) {
+  try {
+    appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider(recaptchaEnterpriseSiteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('Firebase App Check initialization failed:', error);
+    }
+  }
+} else if (import.meta.env.DEV && !recaptchaEnterpriseSiteKey) {
+  console.warn(
+    'Firebase App Check skipped: VITE_RECAPTCHA_ENTERPRISE_SITE_KEY is not configured.',
+  );
+}
+
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 
