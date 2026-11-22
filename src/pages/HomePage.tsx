@@ -6,7 +6,6 @@ import {
   FileText,
   HeartPulse,
   Leaf,
-  Plus,
   Search,
   Sparkles,
   Stethoscope,
@@ -14,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { DemoImage } from '../components/DemoImage';
+import { ProductQuantityControl } from '../components/ProductQuantityControl';
 import {
   AYURVEDA_PROMO_IMAGE,
   HERO_BANNER_IMAGE,
@@ -81,7 +81,7 @@ export function HomePage({
   onOpenRxUpload,
   onOpenProduct,
 }: HomePageProps) {
-  const { selectedCity, catalogueMedicines, addToDemoCart } = useStore();
+  const { selectedCity, catalogueMedicines } = useStore();
   const heroInputRef = useRef<HTMLInputElement | null>(null);
   const [heroQuery, setHeroQuery] = useState('');
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
@@ -116,11 +116,10 @@ export function HomePage({
     }
   };
 
-  const handleQuickAdd = (med: DemoMedicine) => {
-    const res = addToDemoCart(med);
-    setFeedbackMsg(res.message);
+  const showQuickFeedback = (message: string) => {
+    setFeedbackMsg(message);
     window.setTimeout(() => {
-      setFeedbackMsg((curr) => (curr === res.message ? null : curr));
+      setFeedbackMsg((curr) => (curr === message ? null : curr));
     }, 3000);
   };
 
@@ -503,7 +502,7 @@ export function HomePage({
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                  <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <span className="block text-[11px] text-slate-500">
                         Demo MRP ({med.packSize})
@@ -512,15 +511,11 @@ export function HomePage({
                         {formatInr(med.mrpInr)}
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      disabled={!fefo}
-                      onClick={() => handleQuickAdd(med)}
-                      className="min-h-[40px] px-3.5 py-2 rounded-lg bg-[#0B6E4F] text-white text-xs font-medium hover:bg-[#064E3B] disabled:bg-slate-200 disabled:text-slate-500 transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer disabled:cursor-not-allowed"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Demo</span>
-                    </button>
+                    <ProductQuantityControl
+                      medicine={med}
+                      zeroLabel="Demo"
+                      onFeedback={showQuickFeedback}
+                    />
                   </div>
                 </div>
               </article>

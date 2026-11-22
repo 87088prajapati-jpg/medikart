@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
-import { ArrowUpDown, Plus, Search, X } from 'lucide-react';
+import { ArrowUpDown, Search, X } from 'lucide-react';
 import { DemoImage } from '../components/DemoImage';
+import { ProductQuantityControl } from '../components/ProductQuantityControl';
 import { useStore } from '../context/StoreContext';
 import {
   formatInr,
@@ -31,7 +32,7 @@ export function CataloguePage({
   onSelectCategory,
   onOpenProduct,
 }: CataloguePageProps) {
-  const { catalogueMedicines, addToDemoCart } = useStore();
+  const { catalogueMedicines } = useStore();
   const resultsRef = useRef<HTMLElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedSchedule, setSelectedSchedule] = useState<
@@ -71,11 +72,10 @@ export function CataloguePage({
     sortBy,
   ]);
 
-  const handleAdd = (med: DemoMedicine) => {
-    const res = addToDemoCart(med);
-    setFeedback(res.message);
+  const showFeedback = (message: string) => {
+    setFeedback(message);
     window.setTimeout(() => {
-      setFeedback((curr) => (curr === res.message ? null : curr));
+      setFeedback((curr) => (curr === message ? null : curr));
     }, 3000);
   };
 
@@ -353,7 +353,7 @@ export function CataloguePage({
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                       <div>
                         <span className="block text-[11px] text-slate-500">
                           Demo MRP ({med.packSize})
@@ -366,19 +366,15 @@ export function CataloguePage({
                         <button
                           type="button"
                           onClick={() => onOpenProduct(med)}
-                          className="min-h-[38px] px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 hover:border-[#0B6E4F] hover:text-[#0B6E4F] transition-colors cursor-pointer"
+                          className="min-h-[40px] px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 hover:border-[#0B6E4F] hover:text-[#0B6E4F] transition-colors cursor-pointer"
                         >
                           Details
                         </button>
-                        <button
-                          type="button"
-                          disabled={!fefo}
-                          onClick={() => handleAdd(med)}
-                          className="min-h-[38px] px-3 py-2 rounded-lg bg-[#0B6E4F] text-white text-xs font-medium hover:bg-[#064E3B] disabled:bg-slate-200 disabled:text-slate-500 transition-colors inline-flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>Demo</span>
-                        </button>
+                        <ProductQuantityControl
+                          medicine={med}
+                          zeroLabel="Demo"
+                          onFeedback={showFeedback}
+                        />
                       </div>
                     </div>
                   </div>

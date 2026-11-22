@@ -4,11 +4,11 @@ import {
   ArrowLeft,
   CheckCircle2,
   Package,
-  Plus,
   ShieldAlert,
   ThermometerSnowflake,
 } from 'lucide-react';
 import { DemoImage } from '../components/DemoImage';
+import { ProductQuantityControl } from '../components/ProductQuantityControl';
 import { useStore } from '../context/StoreContext';
 import {
   formatInr,
@@ -16,6 +16,7 @@ import {
   getFefoActiveBatch,
   parseExpiryEndOfMonth,
 } from '../lib/inventoryUtils';
+import { sanitizeId } from '../lib/validation';
 import type { DemoMedicine } from '../types/pharmacy';
 
 interface ProductDetailPageProps {
@@ -29,10 +30,13 @@ export function ProductDetailPage({
   onBack,
   onGoToCart,
 }: ProductDetailPageProps) {
-  const { addToDemoCart } = useStore();
+  const { cartItems } = useStore();
   const [addedMsg, setAddedMsg] = useState<string | null>(null);
 
   const fefoBatch = getFefoActiveBatch(medicine.batches);
+  const skuId = sanitizeId(medicine.skuId);
+  const currentQuantity =
+    cartItems.find((item) => item.skuId === skuId)?.quantity ?? 0;
 
   const sortedBatches = [...medicine.batches].sort(
     (a, b) =>
@@ -40,9 +44,11 @@ export function ProductDetailPage({
       parseExpiryEndOfMonth(b.expiryMonthYear).getTime(),
   );
 
-  const handleAdd = () => {
-    const res = addToDemoCart(medicine);
-    setAddedMsg(res.message);
+  const handleFeedback = (message: string) => {
+    setAddedMsg(message);
+    window.setTimeout(() => {
+      setAddedMsg((curr) => (curr === message ? null : curr));
+    }, 3000);
   };
 
   const renderStatusLabel = (
@@ -166,20 +172,16 @@ export function ProductDetailPage({
               </div>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <button
-                  type="button"
-                  disabled={!fefoBatch}
-                  onClick={handleAdd}
-                  className="min-h-[44px] px-6 py-2.5 rounded-xl bg-[#0B6E4F] text-white text-sm font-medium hover:bg-[#064E3B] disabled:bg-slate-200 disabled:text-slate-500 transition-colors inline-flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Demo Item to Cart</span>
-                </button>
-                {addedMsg && (
+                <ProductQuantityControl
+                  medicine={medicine}
+                  zeroLabel="Demo"
+                  onFeedback={handleFeedback}
+                />
+                {(currentQuantity > 0 || addedMsg) && (
                   <button
                     type="button"
                     onClick={onGoToCart}
-                    className="min-h-[44px] px-4 py-2.5 rounded-xl border border-[#0B6E4F] text-[#0B6E4F] text-sm font-medium hover:bg-white transition-colors cursor-pointer"
+                    className="min-h-[40px] px-4 py-2 rounded-lg border border-[#0B6E4F] text-[#0B6E4F] text-xs sm:text-sm font-medium hover:bg-white transition-colors cursor-pointer"
                   >
                     View Demo Cart
                   </button>
